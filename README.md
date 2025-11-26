@@ -54,7 +54,7 @@ Each room gets:
 
 1. Open HACS → Integrations
 2. Click the three dots menu → Custom repositories
-3. Add: `https://github.com/your-username/adaptive-lighting-pro`
+3. Add: `https://github.com/mactesting12/adaptive-lighting-pro`
 4. Category: Integration
 5. Click "Add"
 6. Search for "Adaptive Lighting Pro" and download
@@ -174,8 +174,8 @@ Resume adaptive lighting immediately.
 
 ## Support
 
-- [Report Issues](https://github.com/your-username/adaptive-lighting-pro/issues)
-- [Discussions](https://github.com/your-username/adaptive-lighting-pro/discussions)
+- [Report Issues](https://github.com/mactesting12/adaptive-lighting-pro/issues)
+- [Discussions](https://github.com/mactesting12/adaptive-lighting-pro/discussions)
 
 ## License
 
