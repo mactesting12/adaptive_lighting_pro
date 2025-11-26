@@ -4,10 +4,10 @@
   "codeowners": [],
   "config_flow": true,
   "dependencies": [],
-  "documentation": "https://github.com/your-username/adaptive-lighting-pro",
+  "documentation": "https://github.com/mactesting12/adaptive-lighting-pro",
   "integration_type": "hub",
   "iot_class": "calculated",
-  "issue_tracker": "https://github.com/your-username/adaptive-lighting-pro/issues",
+  "issue_tracker": "https://github.com/mactesting12/adaptive-lighting-pro/issues",
   "requirements": [],
   "version": "1.0.0"
 }
