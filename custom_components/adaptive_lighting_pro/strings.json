@@ -1,0 +1,120 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Room Setup",
+        "description": "Configure lights and triggers for this room",
+        "data": {
+          "name": "Room Name",
+          "lights": "Lights to Control",
+          "trigger_entities": "Trigger Switches (Zigbee)",
+          "enable_entity": "Enable Control (input_boolean)",
+          "sync_group": "Sync Group Name",
+          "apply_delay": "Apply Delay"
+        },
+        "data_description": {
+          "trigger_entities": "Watch these for ON events (Zigbee switches, light groups)",
+          "enable_entity": "Control this room via automations",
+          "sync_group": "Rooms with same name sync together",
+          "apply_delay": "Wait after turn-on (helps Zigbee timing)"
+        }
+      },
+      "brightness": {
+        "title": "Brightness Settings",
+        "data": {
+          "min_brightness": "Minimum Brightness",
+          "max_brightness": "Maximum Brightness",
+          "brightness_mode": "Brightness Mode"
+        }
+      },
+      "color_temp": {
+        "title": "Color Temperature",
+        "data": {
+          "min_color_temp": "Minimum (Warm)",
+          "max_color_temp": "Maximum (Cool)",
+          "color_temp_mode": "Color Temp Mode"
+        }
+      },
+      "timing": {
+        "title": "Timing",
+        "data": {
+          "sunrise_offset": "Sunrise Offset",
+          "sunset_offset": "Sunset Offset",
+          "transition": "Transition Time",
+          "update_interval": "Update Interval"
+        }
+      },
+      "sleep": {
+        "title": "Sleep Mode",
+        "data": {
+          "sleep_brightness": "Sleep Brightness",
+          "sleep_color_temp": "Sleep Color Temp"
+        }
+      },
+      "override": {
+        "title": "Override Detection",
+        "data": {
+          "detect_manual_override": "Detect Manual Changes",
+          "manual_override_timeout": "Override Timeout"
+        }
+      }
+    },
+    "error": {
+      "no_lights": "Select at least one light"
+    }
+  },
+  "options": {
+    "step": {
+      "user": {
+        "title": "Room Setup",
+        "data": {
+          "name": "Room Name",
+          "lights": "Lights to Control",
+          "trigger_entities": "Trigger Switches",
+          "enable_entity": "Enable Control",
+          "sync_group": "Sync Group",
+          "apply_delay": "Apply Delay"
+        }
+      },
+      "brightness": {
+        "title": "Brightness",
+        "data": {
+          "min_brightness": "Minimum",
+          "max_brightness": "Maximum",
+          "brightness_mode": "Mode"
+        }
+      },
+      "color_temp": {
+        "title": "Color Temperature",
+        "data": {
+          "min_color_temp": "Minimum",
+          "max_color_temp": "Maximum",
+          "color_temp_mode": "Mode"
+        }
+      },
+      "timing": {
+        "title": "Timing",
+        "data": {
+          "sunrise_offset": "Sunrise Offset",
+          "sunset_offset": "Sunset Offset",
+          "transition": "Transition",
+          "update_interval": "Update Interval"
+        }
+      },
+      "sleep": {
+        "title": "Sleep Mode",
+        "data": {
+          "sleep_brightness": "Brightness",
+          "sleep_color_temp": "Color Temp"
+        }
+      },
+      "override": {
+        "title": "Override",
+        "data": {
+          "detect_manual_override": "Detect Changes",
+          "manual_override_timeout": "Timeout"
+        }
+      }
+    }
+  }
+}
