@@ -1,0 +1,185 @@
+# Example Lovelace Dashboard for Adaptive Lighting Pro
+# Add this as a view in your dashboard or customize as needed
+
+title: Adaptive Lighting
+path: adaptive-lighting
+icon: mdi:lightbulb-auto
+badges: []
+cards:
+  # Header Card
+  - type: markdown
+    content: |
+      # 💡 Adaptive Lighting Pro
+      Circadian-rhythm based lighting control
+
+  # Global Controls
+  - type: entities
+    title: Global Controls
+    entities:
+      - entity: input_boolean.alp_enabled
+        name: Master Enable
+      - entity: input_boolean.alp_sleep_mode
+        name: Global Sleep Mode
+      - entity: sensor.alp_solar_position
+        name: Current Solar Position
+      - entity: sensor.alp_circadian_factor
+        name: Circadian Factor
+      - entity: sensor.alp_day_progress
+        name: Day Progress
+
+  # Living Room Card
+  - type: vertical-stack
+    cards:
+      - type: custom:mushroom-title-card
+        title: Living Room
+        subtitle: Adaptive Lighting
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-entity-card
+            entity: switch.adaptive_lighting_pro_living_room_enabled
+            tap_action:
+              action: toggle
+            icon_color: amber
+            layout: vertical
+          - type: custom:mushroom-entity-card
+            entity: switch.adaptive_lighting_pro_living_room_sleep_mode
+            tap_action:
+              action: toggle
+            icon_color: deep-purple
+            layout: vertical
+      - type: glance
+        entities:
+          - entity: sensor.adaptive_lighting_pro_living_room_brightness
+            name: Brightness
+          - entity: sensor.adaptive_lighting_pro_living_room_color_temperature
+            name: Color Temp
+          - entity: sensor.adaptive_lighting_pro_living_room_status
+            name: Status
+      - type: custom:mini-graph-card
+        entities:
+          - entity: sensor.adaptive_lighting_pro_living_room_brightness
+            name: Brightness
+            color: '#FFD54F'
+          - entity: sensor.adaptive_lighting_pro_living_room_circadian_factor
+            name: Circadian
+            color: '#4FC3F7'
+            y_axis: secondary
+        hours_to_show: 24
+        points_per_hour: 4
+        line_width: 2
+        hour24: true
+        show:
+          labels: true
+          legend: true
+
+  # Bedroom Card
+  - type: vertical-stack
+    cards:
+      - type: custom:mushroom-title-card
+        title: Bedroom
+        subtitle: Adaptive Lighting
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-entity-card
+            entity: switch.adaptive_lighting_pro_bedroom_enabled
+            tap_action:
+              action: toggle
+            icon_color: amber
+            layout: vertical
+          - type: custom:mushroom-entity-card
+            entity: switch.adaptive_lighting_pro_bedroom_sleep_mode
+            tap_action:
+              action: toggle
+            icon_color: deep-purple
+            layout: vertical
+      - type: glance
+        entities:
+          - entity: sensor.adaptive_lighting_pro_bedroom_brightness
+            name: Brightness
+          - entity: sensor.adaptive_lighting_pro_bedroom_color_temperature
+            name: Color Temp
+          - entity: sensor.adaptive_lighting_pro_bedroom_status
+            name: Status
+
+  # Office Card
+  - type: vertical-stack
+    cards:
+      - type: custom:mushroom-title-card
+        title: Office
+        subtitle: Adaptive Lighting
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-entity-card
+            entity: switch.adaptive_lighting_pro_office_enabled
+            tap_action:
+              action: toggle
+            icon_color: amber
+            layout: vertical
+          - type: custom:mushroom-entity-card
+            entity: switch.adaptive_lighting_pro_office_sleep_mode
+            tap_action:
+              action: toggle
+            icon_color: deep-purple
+            layout: vertical
+      - type: glance
+        entities:
+          - entity: sensor.adaptive_lighting_pro_office_brightness
+            name: Brightness
+          - entity: sensor.adaptive_lighting_pro_office_color_temperature
+            name: Color Temp
+          - entity: sensor.adaptive_lighting_pro_office_status
+            name: Status
+
+  # Sun Position Graph
+  - type: custom:mini-graph-card
+    name: Sun & Circadian Today
+    entities:
+      - entity: sensor.alp_recommended_brightness
+        name: Recommended Brightness
+        color: '#FFD54F'
+      - entity: sensor.alp_day_progress
+        name: Day Progress
+        color: '#81C784'
+        y_axis: secondary
+    hours_to_show: 24
+    points_per_hour: 4
+    line_width: 2
+    hour24: true
+    show:
+      labels: true
+      legend: true
+      fill: fade
+
+  # Settings Card (for custom integration)
+  - type: entities
+    title: Living Room Settings
+    show_header_toggle: false
+    entities:
+      - entity: number.adaptive_lighting_pro_living_room_minimum_brightness
+        name: Min Brightness
+      - entity: number.adaptive_lighting_pro_living_room_maximum_brightness
+        name: Max Brightness
+      - entity: number.adaptive_lighting_pro_living_room_minimum_color_temperature
+        name: Min Color Temp
+      - entity: number.adaptive_lighting_pro_living_room_maximum_color_temperature
+        name: Max Color Temp
+      - entity: number.adaptive_lighting_pro_living_room_transition_time
+        name: Transition Time
+
+  # Info Card
+  - type: markdown
+    content: |
+      ### How It Works
+      
+      **Circadian Mode**: Uses a natural bell curve that peaks at solar noon.
+      
+      **Solar Mode**: Directly follows sun elevation (higher sun = brighter/cooler).
+      
+      **Time-based Mode**: Linear progression from sunrise to sunset.
+      
+      ---
+      
+      **Current Values**:
+      - 🌅 Sunrise: {{ as_timestamp(state_attr('sun.sun', 'next_rising')) | timestamp_custom('%H:%M') }}
+      - 🌇 Sunset: {{ as_timestamp(state_attr('sun.sun', 'next_setting')) | timestamp_custom('%H:%M') }}
+      - ☀️ Elevation: {{ state_attr('sun.sun', 'elevation') | round(1) }}°

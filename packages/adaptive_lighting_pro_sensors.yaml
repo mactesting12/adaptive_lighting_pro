@@ -1,0 +1,470 @@
+# Adaptive Lighting Pro - Sensor Package
+# Add this to your Home Assistant configuration
+# Place in /config/packages/adaptive_lighting_pro.yaml
+# Or include in configuration.yaml
+
+# ============================================
+# SYNC GROUPS
+# ============================================
+# Use sync groups to keep multiple rooms at the same brightness/color temp.
+# Create one set per sync group you want (e.g., downstairs, upstairs)
+# All rooms in the same sync group will share these values.
+
+input_number:
+  # === SYNC GROUP: DOWNSTAIRS ===
+  alp_sync_downstairs_brightness:
+    name: "ALP Sync Downstairs Brightness"
+    icon: mdi:brightness-percent
+    min: 0
+    max: 100
+    step: 1
+    unit_of_measurement: "%"
+    mode: box
+  
+  alp_sync_downstairs_color_temp:
+    name: "ALP Sync Downstairs Color Temp"
+    icon: mdi:thermometer
+    min: 1800
+    max: 6500
+    step: 1
+    unit_of_measurement: "K"
+    mode: box
+
+  # === SYNC GROUP: UPSTAIRS ===
+  alp_sync_upstairs_brightness:
+    name: "ALP Sync Upstairs Brightness"
+    icon: mdi:brightness-percent
+    min: 0
+    max: 100
+    step: 1
+    unit_of_measurement: "%"
+    mode: box
+  
+  alp_sync_upstairs_color_temp:
+    name: "ALP Sync Upstairs Color Temp"
+    icon: mdi:thermometer
+    min: 1800
+    max: 6500
+    step: 1
+    unit_of_measurement: "K"
+    mode: box
+
+  # === SYNC GROUP: ALL (whole house sync) ===
+  alp_sync_all_brightness:
+    name: "ALP Sync All Brightness"
+    icon: mdi:brightness-percent
+    min: 0
+    max: 100
+    step: 1
+    unit_of_measurement: "%"
+    mode: box
+  
+  alp_sync_all_color_temp:
+    name: "ALP Sync All Color Temp"
+    icon: mdi:thermometer
+    min: 1800
+    max: 6500
+    step: 1
+    unit_of_measurement: "K"
+    mode: box
+
+  # ============================================
+  # ROOM SENSORS
+  # ============================================
+  # Create one set per room you configure in the blueprint
+  
+  # === LIVING ROOM ===
+  alp_living_room_brightness:
+    name: "ALP Living Room Brightness"
+    icon: mdi:brightness-percent
+    min: 0
+    max: 100
+    step: 1
+    unit_of_measurement: "%"
+    mode: box
+  
+  alp_living_room_color_temp:
+    name: "ALP Living Room Color Temperature"
+    icon: mdi:thermometer
+    min: 1800
+    max: 6500
+    step: 1
+    unit_of_measurement: "K"
+    mode: box
+  
+  alp_living_room_sun_elevation:
+    name: "ALP Living Room Sun Elevation"
+    icon: mdi:weather-sunny
+    min: -90
+    max: 90
+    step: 0.1
+    unit_of_measurement: "°"
+    mode: box
+  
+  alp_living_room_day_progress:
+    name: "ALP Living Room Day Progress"
+    icon: mdi:progress-clock
+    min: 0
+    max: 100
+    step: 0.1
+    unit_of_measurement: "%"
+    mode: box
+
+  # === BEDROOM ===
+  alp_bedroom_brightness:
+    name: "ALP Bedroom Brightness"
+    icon: mdi:brightness-percent
+    min: 0
+    max: 100
+    step: 1
+    unit_of_measurement: "%"
+    mode: box
+  
+  alp_bedroom_color_temp:
+    name: "ALP Bedroom Color Temperature"
+    icon: mdi:thermometer
+    min: 1800
+    max: 6500
+    step: 1
+    unit_of_measurement: "K"
+    mode: box
+  
+  alp_bedroom_sun_elevation:
+    name: "ALP Bedroom Sun Elevation"
+    icon: mdi:weather-sunny
+    min: -90
+    max: 90
+    step: 0.1
+    unit_of_measurement: "°"
+    mode: box
+  
+  alp_bedroom_day_progress:
+    name: "ALP Bedroom Day Progress"
+    icon: mdi:progress-clock
+    min: 0
+    max: 100
+    step: 0.1
+    unit_of_measurement: "%"
+    mode: box
+
+  # === OFFICE ===
+  alp_office_brightness:
+    name: "ALP Office Brightness"
+    icon: mdi:brightness-percent
+    min: 0
+    max: 100
+    step: 1
+    unit_of_measurement: "%"
+    mode: box
+  
+  alp_office_color_temp:
+    name: "ALP Office Color Temperature"
+    icon: mdi:thermometer
+    min: 1800
+    max: 6500
+    step: 1
+    unit_of_measurement: "K"
+    mode: box
+  
+  alp_office_sun_elevation:
+    name: "ALP Office Sun Elevation"
+    icon: mdi:weather-sunny
+    min: -90
+    max: 90
+    step: 0.1
+    unit_of_measurement: "°"
+    mode: box
+  
+  alp_office_day_progress:
+    name: "ALP Office Day Progress"
+    icon: mdi:progress-clock
+    min: 0
+    max: 100
+    step: 0.1
+    unit_of_measurement: "%"
+    mode: box
+
+  # === KITCHEN ===
+  alp_kitchen_brightness:
+    name: "ALP Kitchen Brightness"
+    icon: mdi:brightness-percent
+    min: 0
+    max: 100
+    step: 1
+    unit_of_measurement: "%"
+    mode: box
+  
+  alp_kitchen_color_temp:
+    name: "ALP Kitchen Color Temperature"
+    icon: mdi:thermometer
+    min: 1800
+    max: 6500
+    step: 1
+    unit_of_measurement: "K"
+    mode: box
+  
+  alp_kitchen_sun_elevation:
+    name: "ALP Kitchen Sun Elevation"
+    icon: mdi:weather-sunny
+    min: -90
+    max: 90
+    step: 0.1
+    unit_of_measurement: "°"
+    mode: box
+  
+  alp_kitchen_day_progress:
+    name: "ALP Kitchen Day Progress"
+    icon: mdi:progress-clock
+    min: 0
+    max: 100
+    step: 0.1
+    unit_of_measurement: "%"
+    mode: box
+
+  # === BATHROOM ===
+  alp_bathroom_brightness:
+    name: "ALP Bathroom Brightness"
+    icon: mdi:brightness-percent
+    min: 0
+    max: 100
+    step: 1
+    unit_of_measurement: "%"
+    mode: box
+  
+  alp_bathroom_color_temp:
+    name: "ALP Bathroom Color Temperature"
+    icon: mdi:thermometer
+    min: 1800
+    max: 6500
+    step: 1
+    unit_of_measurement: "K"
+    mode: box
+  
+  alp_bathroom_sun_elevation:
+    name: "ALP Bathroom Sun Elevation"
+    icon: mdi:weather-sunny
+    min: -90
+    max: 90
+    step: 0.1
+    unit_of_measurement: "°"
+    mode: box
+  
+  alp_bathroom_day_progress:
+    name: "ALP Bathroom Day Progress"
+    icon: mdi:progress-clock
+    min: 0
+    max: 100
+    step: 0.1
+    unit_of_measurement: "%"
+    mode: box
+
+# ============================================
+# ROOM ENABLE/DISABLE CONTROLS
+# ============================================
+# These input_booleans allow you to enable/disable adaptive lighting
+# per room via automations, scripts, or the UI.
+# Link these to the "Enable Control Entity" in each room's blueprint.
+
+input_boolean:
+  # Global Controls
+  alp_enabled:
+    name: "Adaptive Lighting Pro Enabled"
+    icon: mdi:lightbulb-auto
+  
+  alp_sleep_mode:
+    name: "ALP Global Sleep Mode"
+    icon: mdi:sleep
+  
+  # Per-Room Enable/Disable
+  # Use these in the blueprint's "Enable Control Entity" field
+  alp_living_room_enabled:
+    name: "ALP Living Room Enabled"
+    icon: mdi:lightbulb-auto-outline
+  
+  alp_bedroom_enabled:
+    name: "ALP Bedroom Enabled"
+    icon: mdi:lightbulb-auto-outline
+  
+  alp_office_enabled:
+    name: "ALP Office Enabled"
+    icon: mdi:lightbulb-auto-outline
+  
+  alp_kitchen_enabled:
+    name: "ALP Kitchen Enabled"
+    icon: mdi:lightbulb-auto-outline
+  
+  alp_bathroom_enabled:
+    name: "ALP Bathroom Enabled"
+    icon: mdi:lightbulb-auto-outline
+  
+  # Per-Room Sleep Mode Override
+  alp_living_room_sleep:
+    name: "ALP Living Room Sleep Mode"
+    icon: mdi:sleep
+  
+  alp_bedroom_sleep:
+    name: "ALP Bedroom Sleep Mode"
+    icon: mdi:sleep
+  
+  alp_office_sleep:
+    name: "ALP Office Sleep Mode"
+    icon: mdi:sleep
+
+# ============================================
+# TEMPLATE SENSORS (Calculated values)
+# ============================================
+
+template:
+  - sensor:
+      # Global Circadian Values
+      - name: "ALP Circadian Factor"
+        unique_id: alp_circadian_factor
+        icon: mdi:sine-wave
+        unit_of_measurement: "%"
+        state: >
+          {% set elevation = state_attr('sun.sun', 'elevation') | float(0) %}
+          {% if elevation <= 0 %}
+            0
+          {% else %}
+            {% set rise = state_attr('sun.sun', 'next_rising') | as_datetime | as_local %}
+            {% set set = state_attr('sun.sun', 'next_setting') | as_datetime | as_local %}
+            {% if rise > now() %}
+              {% set rise = rise - timedelta(days=1) %}
+            {% endif %}
+            {% if set < rise %}
+              {% set set = set + timedelta(days=1) %}
+            {% endif %}
+            {% set total = (set - rise).total_seconds() %}
+            {% set elapsed = (now() - rise).total_seconds() %}
+            {% set progress = (elapsed / total) | float %}
+            {% if progress <= 0.5 %}
+              {{ ((2 * progress) ** 1.5 * 100) | round(1) }}
+            {% else %}
+              {{ ((2 * (1 - progress)) ** 1.5 * 100) | round(1) }}
+            {% endif %}
+          {% endif %}
+        attributes:
+          sun_elevation: "{{ state_attr('sun.sun', 'elevation') | float(0) | round(1) }}"
+          sun_azimuth: "{{ state_attr('sun.sun', 'azimuth') | float(0) | round(1) }}"
+          is_daytime: "{{ state_attr('sun.sun', 'elevation') | float(0) > 0 }}"
+      
+      - name: "ALP Solar Position"
+        unique_id: alp_solar_position
+        icon: mdi:sun-compass
+        state: >
+          {% set elevation = state_attr('sun.sun', 'elevation') | float(0) %}
+          {% if elevation < -18 %}
+            Night
+          {% elif elevation < -12 %}
+            Astronomical Twilight
+          {% elif elevation < -6 %}
+            Nautical Twilight
+          {% elif elevation < 0 %}
+            Civil Twilight
+          {% elif elevation < 15 %}
+            Golden Hour
+          {% elif elevation < 30 %}
+            Morning/Evening
+          {% else %}
+            Daylight
+          {% endif %}
+        attributes:
+          elevation: "{{ state_attr('sun.sun', 'elevation') | float(0) | round(1) }}"
+          azimuth: "{{ state_attr('sun.sun', 'azimuth') | float(0) | round(1) }}"
+          next_rising: "{{ state_attr('sun.sun', 'next_rising') }}"
+          next_setting: "{{ state_attr('sun.sun', 'next_setting') }}"
+          next_dawn: "{{ state_attr('sun.sun', 'next_dawn') }}"
+          next_dusk: "{{ state_attr('sun.sun', 'next_dusk') }}"
+          next_noon: "{{ state_attr('sun.sun', 'next_noon') }}"
+          next_midnight: "{{ state_attr('sun.sun', 'next_midnight') }}"
+      
+      - name: "ALP Recommended Brightness"
+        unique_id: alp_recommended_brightness
+        icon: mdi:brightness-percent
+        unit_of_measurement: "%"
+        device_class: power_factor
+        state: >
+          {% set elevation = state_attr('sun.sun', 'elevation') | float(0) %}
+          {% set min_bright = 20 %}
+          {% set max_bright = 100 %}
+          {% if elevation <= 0 %}
+            {{ min_bright }}
+          {% else %}
+            {% set rise = state_attr('sun.sun', 'next_rising') | as_datetime | as_local %}
+            {% set set = state_attr('sun.sun', 'next_setting') | as_datetime | as_local %}
+            {% if rise > now() %}{% set rise = rise - timedelta(days=1) %}{% endif %}
+            {% if set < rise %}{% set set = set + timedelta(days=1) %}{% endif %}
+            {% set total = (set - rise).total_seconds() %}
+            {% set elapsed = (now() - rise).total_seconds() %}
+            {% set progress = (elapsed / total) | float %}
+            {% if progress <= 0.5 %}
+              {% set factor = (2 * progress) ** 1.5 %}
+            {% else %}
+              {% set factor = (2 * (1 - progress)) ** 1.5 %}
+            {% endif %}
+            {{ (min_bright + ((max_bright - min_bright) * factor)) | round(0) | int }}
+          {% endif %}
+      
+      - name: "ALP Recommended Color Temp"
+        unique_id: alp_recommended_color_temp
+        icon: mdi:thermometer
+        unit_of_measurement: "K"
+        state: >
+          {% set elevation = state_attr('sun.sun', 'elevation') | float(0) %}
+          {% set min_ct = 2200 %}
+          {% set max_ct = 5500 %}
+          {% if elevation <= 0 %}
+            {{ min_ct }}
+          {% else %}
+            {% set rise = state_attr('sun.sun', 'next_rising') | as_datetime | as_local %}
+            {% set set = state_attr('sun.sun', 'next_setting') | as_datetime | as_local %}
+            {% if rise > now() %}{% set rise = rise - timedelta(days=1) %}{% endif %}
+            {% if set < rise %}{% set set = set + timedelta(days=1) %}{% endif %}
+            {% set total = (set - rise).total_seconds() %}
+            {% set elapsed = (now() - rise).total_seconds() %}
+            {% set progress = (elapsed / total) | float %}
+            {% if progress <= 0.5 %}
+              {% set factor = (2 * progress) ** 1.5 %}
+            {% else %}
+              {% set factor = (2 * (1 - progress)) ** 1.5 %}
+            {% endif %}
+            {{ (min_ct + ((max_ct - min_ct) * factor)) | round(0) | int }}
+          {% endif %}
+        attributes:
+          mireds: >
+            {{ (1000000 / this.state | float(4000)) | round(0) | int }}
+      
+      - name: "ALP Day Progress"
+        unique_id: alp_day_progress
+        icon: mdi:progress-clock
+        unit_of_measurement: "%"
+        state: >
+          {% set elevation = state_attr('sun.sun', 'elevation') | float(0) %}
+          {% if elevation <= 0 %}
+            {% if now().hour < 12 %}0{% else %}100{% endif %}
+          {% else %}
+            {% set rise = state_attr('sun.sun', 'next_rising') | as_datetime | as_local %}
+            {% set set = state_attr('sun.sun', 'next_setting') | as_datetime | as_local %}
+            {% if rise > now() %}{% set rise = rise - timedelta(days=1) %}{% endif %}
+            {% if set < rise %}{% set set = set + timedelta(days=1) %}{% endif %}
+            {% set total = (set - rise).total_seconds() %}
+            {% set elapsed = (now() - rise).total_seconds() %}
+            {{ ((elapsed / total) * 100) | round(1) }}
+          {% endif %}
+        attributes:
+          sunrise: "{{ state_attr('sun.sun', 'next_rising') }}"
+          sunset: "{{ state_attr('sun.sun', 'next_setting') }}"
+          solar_noon: >
+            {% set rise = state_attr('sun.sun', 'next_rising') | as_datetime %}
+            {% set set = state_attr('sun.sun', 'next_setting') | as_datetime %}
+            {{ rise + (set - rise) / 2 }}
+
+# ============================================
+# UTILITY METER (Track daily light usage)
+# ============================================
+
+# Uncomment if you want to track how often lights change
+# utility_meter:
+#   alp_daily_adjustments:
+#     source: sensor.alp_adjustment_counter
+#     cycle: daily

@@ -1,0 +1,623 @@
+blueprint:
+  name: "Adaptive Lighting Pro"
+  description: >
+    Advanced adaptive lighting following circadian rhythm and sun position.
+    Creates sensors for brightness, color temperature, and provides room-based control.
+    
+    Features:
+    - Circadian rhythm based brightness and color temperature
+    - Sun position tracking (sunrise to sunset)
+    - Per-room configuration
+    - Manual override detection with configurable timeout
+    - Sleep mode support
+    - Transition smoothing
+    - Exposed sensors for all values
+    - Switch/trigger watching for Zigbee setups
+    - Sync groups for keeping rooms together
+    
+  domain: automation
+  author: "Adaptive Lighting Pro"
+  
+  input:
+    # Room Configuration
+    room_name:
+      name: "Room Name"
+      description: "Unique identifier for this room (used in sensor names)"
+      selector:
+        text:
+      default: "living_room"
+    
+    # Light Entities
+    light_entities:
+      name: "Light Entities"
+      description: "Select lights to control in this room"
+      selector:
+        entity:
+          domain: light
+          multiple: true
+    
+    # Trigger Entities (Switch Watching)
+    trigger_entities:
+      name: "Trigger Switches/Entities (Optional)"
+      description: >
+        Select switches, sensors, or other entities to WATCH for state changes.
+        When these turn ON, adaptive lighting will be applied to the lights above.
+        Use this for Zigbee switches that control smart bulbs, or light groups
+        where the group switch doesn't always trigger light state changes.
+      selector:
+        entity:
+          multiple: true
+      default: []
+    
+    # Enable/Disable Entity
+    enable_entity:
+      name: "Enable Control Entity (Optional)"
+      description: >
+        Input boolean to enable/disable this room's adaptive lighting via automations.
+        Create an input_boolean helper and select it here.
+      selector:
+        entity:
+          domain: input_boolean
+      default: ""
+    
+    # Sync Group
+    sync_group:
+      name: "Sync Group (Optional)"
+      description: >
+        Enter a sync group name (e.g., 'downstairs', 'upstairs') to keep multiple rooms
+        at the same brightness and color temperature. All rooms with the same sync group
+        name will use identical values calculated from the FIRST room in the group.
+        Leave empty for independent room control.
+      selector:
+        text:
+      default: ""
+    
+    # Apply on light turn on
+    apply_on_turn_on:
+      name: "Apply When Lights Turn On"
+      description: "Immediately apply adaptive lighting when any light turns on"
+      selector:
+        boolean:
+      default: true
+    
+    # Apply delay after turn on
+    apply_delay:
+      name: "Delay After Turn On (ms)"
+      description: >
+        Wait this many milliseconds after a light/switch turns on before applying.
+        Useful for Zigbee devices that need time to report state. Try 500-1000ms
+        if lights aren't catching the adaptive values.
+      selector:
+        number:
+          min: 0
+          max: 5000
+          unit_of_measurement: "ms"
+          mode: slider
+      default: 500
+    
+    # Brightness Settings
+    min_brightness:
+      name: "Minimum Brightness"
+      description: "Minimum brightness percentage (night time)"
+      selector:
+        number:
+          min: 1
+          max: 100
+          unit_of_measurement: "%"
+          mode: slider
+      default: 20
+    
+    max_brightness:
+      name: "Maximum Brightness"
+      description: "Maximum brightness percentage (midday)"
+      selector:
+        number:
+          min: 1
+          max: 100
+          unit_of_measurement: "%"
+          mode: slider
+      default: 100
+    
+    # Color Temperature Settings
+    min_color_temp:
+      name: "Minimum Color Temperature"
+      description: "Warmest color temperature in Kelvin (evening/night)"
+      selector:
+        number:
+          min: 1800
+          max: 6500
+          unit_of_measurement: "K"
+          mode: slider
+      default: 2200
+    
+    max_color_temp:
+      name: "Maximum Color Temperature"
+      description: "Coolest color temperature in Kelvin (midday)"
+      selector:
+        number:
+          min: 1800
+          max: 6500
+          unit_of_measurement: "K"
+          mode: slider
+      default: 5500
+    
+    # Sun Configuration
+    sunrise_offset:
+      name: "Sunrise Offset"
+      description: "Minutes to offset from actual sunrise (negative = before)"
+      selector:
+        number:
+          min: -120
+          max: 120
+          unit_of_measurement: "min"
+          mode: slider
+      default: 0
+    
+    sunset_offset:
+      name: "Sunset Offset"
+      description: "Minutes to offset from actual sunset (negative = before)"
+      selector:
+        number:
+          min: -120
+          max: 120
+          unit_of_measurement: "min"
+          mode: slider
+      default: 0
+    
+    # Timing Configuration
+    sleep_mode_entity:
+      name: "Sleep Mode Entity (Optional)"
+      description: "Input boolean for sleep mode"
+      selector:
+        entity:
+          domain: input_boolean
+      default: ""
+    
+    sleep_brightness:
+      name: "Sleep Mode Brightness"
+      description: "Brightness when sleep mode is active"
+      selector:
+        number:
+          min: 1
+          max: 50
+          unit_of_measurement: "%"
+          mode: slider
+      default: 5
+    
+    sleep_color_temp:
+      name: "Sleep Mode Color Temperature"
+      description: "Color temperature when sleep mode is active"
+      selector:
+        number:
+          min: 1800
+          max: 3000
+          unit_of_measurement: "K"
+          mode: slider
+      default: 2000
+    
+    # Transition Settings
+    transition_time:
+      name: "Transition Time"
+      description: "Seconds for light transitions"
+      selector:
+        number:
+          min: 0
+          max: 60
+          unit_of_measurement: "s"
+          mode: slider
+      default: 3
+    
+    update_interval:
+      name: "Update Interval"
+      description: "Seconds between updates"
+      selector:
+        number:
+          min: 30
+          max: 600
+          unit_of_measurement: "s"
+          mode: slider
+      default: 60
+    
+    # Override Settings
+    detect_manual_override:
+      name: "Detect Manual Override"
+      description: "Pause automation when lights are manually changed"
+      selector:
+        boolean:
+      default: true
+    
+    manual_override_timeout:
+      name: "Manual Override Timeout"
+      description: "Minutes before resuming after manual change"
+      selector:
+        number:
+          min: 1
+          max: 180
+          unit_of_measurement: "min"
+          mode: slider
+      default: 30
+    
+    # Advanced Settings
+    brightness_mode:
+      name: "Brightness Mode"
+      description: "How brightness changes throughout the day"
+      selector:
+        select:
+          options:
+            - label: "Solar - Follow sun elevation"
+              value: "solar"
+            - label: "Time-based - Linear from sunrise to sunset"
+              value: "time_based"
+            - label: "Circadian - Natural circadian curve"
+              value: "circadian"
+      default: "circadian"
+    
+    color_temp_mode:
+      name: "Color Temperature Mode"
+      description: "How color temperature changes throughout the day"
+      selector:
+        select:
+          options:
+            - label: "Solar - Follow sun elevation"
+              value: "solar"
+            - label: "Time-based - Linear from sunrise to sunset"
+              value: "time_based"
+            - label: "Circadian - Natural circadian curve"
+              value: "circadian"
+      default: "circadian"
+
+# Variables for calculations
+variables:
+  room: !input room_name
+  lights: !input light_entities
+  trigger_switches: !input trigger_entities
+  enable_input: !input enable_entity
+  sync_group_name: !input sync_group
+  apply_on_on: !input apply_on_turn_on
+  apply_delay_ms: !input apply_delay
+  min_bright: !input min_brightness
+  max_bright: !input max_brightness
+  min_ct: !input min_color_temp
+  max_ct: !input max_color_temp
+  sunrise_off: !input sunrise_offset
+  sunset_off: !input sunset_offset
+  sleep_entity: !input sleep_mode_entity
+  sleep_bright: !input sleep_brightness
+  sleep_ct: !input sleep_color_temp
+  transition: !input transition_time
+  interval: !input update_interval
+  override_detect: !input detect_manual_override
+  override_timeout: !input manual_override_timeout
+  bright_mode: !input brightness_mode
+  ct_mode: !input color_temp_mode
+  
+  # Check if room is enabled (via input_boolean if configured)
+  is_room_enabled: >
+    {% if enable_input != '' %}
+      {{ is_state(enable_input, 'on') }}
+    {% else %}
+      true
+    {% endif %}
+  
+  # Sync group sensor (stores calculated values for sync)
+  sync_brightness_sensor: >
+    {% if sync_group_name != '' %}
+      input_number.alp_sync_{{ sync_group_name }}_brightness
+    {% else %}
+      none
+    {% endif %}
+  sync_color_temp_sensor: >
+    {% if sync_group_name != '' %}
+      input_number.alp_sync_{{ sync_group_name }}_color_temp
+    {% else %}
+      none
+    {% endif %}
+  
+  # Calculate sun times with offsets
+  sunrise_time: >
+    {{ (state_attr('sun.sun', 'next_rising') | as_datetime | as_local) + timedelta(minutes=sunrise_off) }}
+  sunset_time: >
+    {{ (state_attr('sun.sun', 'next_setting') | as_datetime | as_local) + timedelta(minutes=sunset_off) }}
+  
+  # Sun elevation
+  sun_elevation: "{{ state_attr('sun.sun', 'elevation') | float(0) }}"
+  sun_azimuth: "{{ state_attr('sun.sun', 'azimuth') | float(0) }}"
+  
+  # Time calculations
+  current_time: "{{ now() }}"
+  is_daytime: "{{ sun_elevation > 0 }}"
+  
+  # Calculate solar noon (when sun is highest)
+  solar_noon: >
+    {% set rise = state_attr('sun.sun', 'next_rising') | as_datetime | as_local %}
+    {% set set = state_attr('sun.sun', 'next_setting') | as_datetime | as_local %}
+    {{ rise + (set - rise) / 2 }}
+  
+  # Calculate progress through day (0 = sunrise, 0.5 = noon, 1 = sunset)
+  day_progress: >
+    {% if sun_elevation <= 0 %}
+      {% if now().hour < 12 %}0{% else %}1{% endif %}
+    {% else %}
+      {% set rise = today_at(state_attr('sun.sun', 'next_rising') | as_datetime | as_local | as_timestamp | timestamp_custom('%H:%M:%S')) %}
+      {% set set = today_at(state_attr('sun.sun', 'next_setting') | as_datetime | as_local | as_timestamp | timestamp_custom('%H:%M:%S')) %}
+      {% set total = (set - rise).total_seconds() %}
+      {% set elapsed = (now() - rise).total_seconds() %}
+      {{ (elapsed / total) | float | round(3) }}
+    {% endif %}
+  
+  # Circadian curve calculation (bell curve centered at solar noon)
+  circadian_factor: >
+    {% set progress = day_progress | float %}
+    {% if progress <= 0.5 %}
+      {{ (2 * progress) ** 1.5 }}
+    {% else %}
+      {{ (2 * (1 - progress)) ** 1.5 }}
+    {% endif %}
+  
+  # Solar factor based on sun elevation
+  solar_factor: >
+    {% set elevation = sun_elevation | float %}
+    {% if elevation <= 0 %}
+      0
+    {% elif elevation >= 60 %}
+      1
+    {% else %}
+      {{ (elevation / 60) | round(3) }}
+    {% endif %}
+  
+  # Time-based linear factor
+  time_factor: >
+    {% set progress = day_progress | float %}
+    {% if progress <= 0.5 %}
+      {{ 2 * progress }}
+    {% else %}
+      {{ 2 * (1 - progress) }}
+    {% endif %}
+  
+  # Select factor based on mode
+  brightness_factor: >
+    {% if bright_mode == 'solar' %}
+      {{ solar_factor }}
+    {% elif bright_mode == 'time_based' %}
+      {{ time_factor }}
+    {% else %}
+      {{ circadian_factor }}
+    {% endif %}
+  
+  color_temp_factor: >
+    {% if ct_mode == 'solar' %}
+      {{ solar_factor }}
+    {% elif ct_mode == 'time_based' %}
+      {{ time_factor }}
+    {% else %}
+      {{ circadian_factor }}
+    {% endif %}
+  
+  # Check sleep mode
+  is_sleep_mode: >
+    {% if sleep_entity != '' %}
+      {{ is_state(sleep_entity, 'on') }}
+    {% else %}
+      false
+    {% endif %}
+  
+  # Final calculated values
+  calculated_brightness: >
+    {% if is_sleep_mode %}
+      {{ sleep_bright }}
+    {% else %}
+      {% set factor = brightness_factor | float %}
+      {% set range = max_bright - min_bright %}
+      {{ (min_bright + (range * factor)) | round(0) | int }}
+    {% endif %}
+  
+  calculated_color_temp: >
+    {% if is_sleep_mode %}
+      {{ sleep_ct }}
+    {% else %}
+      {% set factor = color_temp_factor | float %}
+      {% set range = max_ct - min_ct %}
+      {{ (min_ct + (range * factor)) | round(0) | int }}
+    {% endif %}
+  
+  # Mireds for Home Assistant (some lights use mireds instead of Kelvin)
+  calculated_mireds: >
+    {{ (1000000 / calculated_color_temp) | round(0) | int }}
+
+trigger:
+  # Time-based trigger
+  - platform: time_pattern
+    seconds: "/{{ interval }}"
+    id: "interval_update"
+  
+  # Sun events
+  - platform: sun
+    event: sunrise
+    offset: "{{ timedelta(minutes=sunrise_off) }}"
+    id: "sunrise"
+  
+  - platform: sun
+    event: sunset
+    offset: "{{ timedelta(minutes=sunset_off) }}"
+    id: "sunset"
+  
+  # State changes
+  - platform: state
+    entity_id: sun.sun
+    attribute: elevation
+    id: "sun_elevation_change"
+  
+  # Sleep mode change (if configured)
+  - platform: template
+    value_template: >
+      {% if sleep_entity != '' %}
+        {{ is_state(sleep_entity, 'on') or is_state(sleep_entity, 'off') }}
+      {% else %}
+        false
+      {% endif %}
+    id: "sleep_mode_change"
+  
+  # Light turned on (direct light entities)
+  - platform: state
+    entity_id: !input light_entities
+    to: "on"
+    id: "light_turned_on"
+  
+  # TRIGGER SWITCHES - Watch for switches/entities turning on
+  # This catches Zigbee switches, light groups, etc.
+  - platform: state
+    entity_id: !input trigger_entities
+    to: "on"
+    id: "trigger_switch_on"
+  
+  # Also catch trigger switches turning to any "on-like" state
+  - platform: template
+    value_template: >
+      {% set triggers = trigger_switches %}
+      {% if triggers | length > 0 %}
+        {% for entity in triggers %}
+          {% if states(entity) in ['on', 'home', 'playing', 'open'] %}
+            true
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+      false
+    id: "trigger_template"
+  
+  # Enable entity turned on (resume adaptive lighting)
+  - platform: template
+    value_template: >
+      {% if enable_input != '' %}
+        {{ is_state(enable_input, 'on') }}
+      {% else %}
+        false
+      {% endif %}
+    id: "room_enabled"
+
+condition:
+  # Room must be enabled (if enable entity is configured)
+  - condition: template
+    value_template: "{{ is_room_enabled }}"
+  
+  # At least one light must be on OR we just got a trigger switch event
+  - condition: or
+    conditions:
+      - condition: template
+        value_template: >
+          {{ expand(lights) | selectattr('state', 'eq', 'on') | list | count > 0 }}
+      - condition: trigger
+        id: "trigger_switch_on"
+      - condition: trigger
+        id: "light_turned_on"
+
+action:
+  # Add delay for trigger switch events (allows Zigbee to stabilize)
+  - choose:
+      - conditions:
+          - condition: or
+            conditions:
+              - condition: trigger
+                id: "trigger_switch_on"
+              - condition: trigger
+                id: "light_turned_on"
+        sequence:
+          - delay:
+              milliseconds: "{{ apply_delay_ms }}"
+    default: []
+  
+  # Re-check that lights are actually on after delay
+  - condition: template
+    value_template: >
+      {{ expand(lights) | selectattr('state', 'eq', 'on') | list | count > 0 }}
+  
+  # Calculate or retrieve values (sync group support)
+  - variables:
+      # Check if we should use sync group values
+      use_sync_values: >
+        {% if sync_group_name != '' %}
+          {% set sync_bright = states('input_number.alp_sync_' ~ sync_group_name ~ '_brightness') %}
+          {{ sync_bright not in ['unknown', 'unavailable', '0', '0.0'] }}
+        {% else %}
+          false
+        {% endif %}
+      
+      # Final brightness (from sync or calculated)
+      final_brightness: >
+        {% if use_sync_values %}
+          {{ states('input_number.alp_sync_' ~ sync_group_name ~ '_brightness') | int }}
+        {% else %}
+          {{ calculated_brightness }}
+        {% endif %}
+      
+      # Final color temp (from sync or calculated)
+      final_color_temp: >
+        {% if use_sync_values %}
+          {{ states('input_number.alp_sync_' ~ sync_group_name ~ '_color_temp') | int }}
+        {% else %}
+          {{ calculated_color_temp }}
+        {% endif %}
+  
+  # Update room-specific sensors
+  - service: input_number.set_value
+    target:
+      entity_id: "input_number.alp_{{ room }}_brightness"
+    data:
+      value: "{{ final_brightness }}"
+    continue_on_error: true
+  
+  - service: input_number.set_value
+    target:
+      entity_id: "input_number.alp_{{ room }}_color_temp"
+    data:
+      value: "{{ final_color_temp }}"
+    continue_on_error: true
+  
+  - service: input_number.set_value
+    target:
+      entity_id: "input_number.alp_{{ room }}_sun_elevation"
+    data:
+      value: "{{ sun_elevation | round(1) }}"
+    continue_on_error: true
+  
+  - service: input_number.set_value
+    target:
+      entity_id: "input_number.alp_{{ room }}_day_progress"
+    data:
+      value: "{{ (day_progress | float * 100) | round(1) }}"
+    continue_on_error: true
+  
+  # Update sync group sensors (if this room is in a sync group and calculated fresh values)
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: "{{ sync_group_name != '' and not use_sync_values }}"
+        sequence:
+          - service: input_number.set_value
+            target:
+              entity_id: "input_number.alp_sync_{{ sync_group_name }}_brightness"
+            data:
+              value: "{{ calculated_brightness }}"
+            continue_on_error: true
+          - service: input_number.set_value
+            target:
+              entity_id: "input_number.alp_sync_{{ sync_group_name }}_color_temp"
+            data:
+              value: "{{ calculated_color_temp }}"
+            continue_on_error: true
+    default: []
+  
+  # Apply to lights - handle each light individually for better compatibility
+  - repeat:
+      for_each: "{{ expand(lights) | selectattr('state', 'eq', 'on') | map(attribute='entity_id') | list }}"
+      sequence:
+        - service: light.turn_on
+          target:
+            entity_id: "{{ repeat.item }}"
+          data:
+            brightness_pct: "{{ final_brightness }}"
+            color_temp_kelvin: "{{ final_color_temp }}"
+            transition: "{{ transition }}"
+          continue_on_error: true
+
+mode: restart
+max_exceeded: silent
