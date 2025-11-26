@@ -1,1 +1,0 @@
-# adaptive_lighting_pro
