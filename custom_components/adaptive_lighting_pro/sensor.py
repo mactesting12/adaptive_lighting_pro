@@ -31,6 +31,7 @@ async def async_setup_entry(
         SunElevationSensor(controller, entry),
         SolarPositionSensor(controller, entry),
         StatusSensor(controller, entry),
+        SyncGroupSensor(controller, entry),
     ], True)
 
 
@@ -203,7 +204,19 @@ class StatusSensor(BaseSensor):
             return "Manual Override"
         if self._controller.sleep_mode:
             return "Sleep Mode"
-        return "Active"
+        
+        # Check partial adaptation
+        adapt_b = self._controller.adapt_brightness
+        adapt_ct = self._controller.adapt_color_temp
+        
+        if adapt_b and adapt_ct:
+            return "Active"
+        elif adapt_b:
+            return "Brightness Only"
+        elif adapt_ct:
+            return "Color Temp Only"
+        else:
+            return "Paused"
 
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
@@ -212,6 +225,8 @@ class StatusSensor(BaseSensor):
             "enabled": self._controller.enabled,
             "manual_override": self._controller.manual_override,
             "sleep_mode": self._controller.sleep_mode,
+            "adapt_brightness": self._controller.adapt_brightness,
+            "adapt_color_temp": self._controller.adapt_color_temp,
             "brightness": self._controller.current_brightness,
             "color_temp_kelvin": ct,
             "color_temp_mireds": int(1000000 / ct) if ct > 0 else 0,
@@ -221,4 +236,57 @@ class StatusSensor(BaseSensor):
             "sync_group": self._controller.sync_group or "None",
             "lights": self._controller.lights,
             "trigger_entities": self._controller.trigger_entities,
+        }
+
+
+class SyncGroupSensor(BaseSensor):
+    """Sync group status sensor."""
+
+    _attr_icon = "mdi:link-variant"
+
+    def __init__(self, controller: AdaptiveLightingController, entry: ConfigEntry) -> None:
+        super().__init__(controller, entry)
+        self._attr_unique_id = f"{entry.entry_id}_sync_group"
+        self._attr_name = "Sync Group"
+
+    @property
+    def native_value(self) -> str:
+        """Return sync group name or 'Not Synced'."""
+        if self._controller.sync_group:
+            return self._controller.sync_group
+        return "Not Synced"
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        """Return sync group details."""
+        sync_group = self._controller.sync_group
+        
+        if not sync_group:
+            return {
+                "is_synced": False,
+                "sync_group_name": None,
+                "is_leader": False,
+                "synced_rooms": [],
+                "synced_room_count": 0,
+            }
+        
+        # Get sync group data
+        from .const import SYNC_GROUPS
+        sync_groups = self._controller.hass.data.get(DOMAIN, {}).get(SYNC_GROUPS, {})
+        sync_data = sync_groups.get(sync_group, {})
+        controllers = sync_data.get("controllers", [])
+        
+        # Get room names in this sync group
+        synced_rooms = [c.name for c in controllers]
+        
+        # Check if this room is the leader (first in list)
+        is_leader = controllers[0] == self._controller if controllers else False
+        
+        return {
+            "is_synced": True,
+            "sync_group_name": sync_group,
+            "is_leader": is_leader,
+            "synced_rooms": synced_rooms,
+            "synced_room_count": len(synced_rooms),
+            "leader_room": controllers[0].name if controllers else None,
         }

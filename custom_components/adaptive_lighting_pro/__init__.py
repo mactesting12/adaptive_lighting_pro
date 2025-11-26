@@ -177,6 +177,8 @@ class AdaptiveLightingController:
         # State
         self._internal_enabled = True
         self._sleep_mode = False
+        self._adapt_brightness = True
+        self._adapt_color_temp = True
         self._current_brightness = 0
         self._current_color_temp = 0
         self._circadian_factor = 0.0
@@ -231,6 +233,26 @@ class AdaptiveLightingController:
     def sleep_mode(self, value: bool) -> None:
         """Set sleep mode."""
         self._sleep_mode = value
+    
+    @property
+    def adapt_brightness(self) -> bool:
+        """Return if brightness adaptation is enabled."""
+        return self._adapt_brightness
+    
+    @adapt_brightness.setter
+    def adapt_brightness(self, value: bool) -> None:
+        """Set brightness adaptation."""
+        self._adapt_brightness = value
+    
+    @property
+    def adapt_color_temp(self) -> bool:
+        """Return if color temp adaptation is enabled."""
+        return self._adapt_color_temp
+    
+    @adapt_color_temp.setter
+    def adapt_color_temp(self, value: bool) -> None:
+        """Set color temp adaptation."""
+        self._adapt_color_temp = value
     
     @property
     def current_brightness(self) -> int:
@@ -598,6 +620,10 @@ class AdaptiveLightingController:
         if not self.enabled:
             return
         
+        # If neither adaptation is enabled, skip
+        if not self._adapt_brightness and not self._adapt_color_temp:
+            return
+        
         lights = entity_ids or self._lights
         if not lights:
             return
@@ -615,16 +641,24 @@ class AdaptiveLightingController:
             
             service_data = {
                 "entity_id": light_id,
-                "brightness": brightness_255,
                 "transition": self._transition,
             }
             
-            if supports_ct:
+            # Only add brightness if adapt_brightness is enabled
+            if self._adapt_brightness:
+                service_data["brightness"] = brightness_255
+            
+            # Only add color_temp if adapt_color_temp is enabled and supported
+            if self._adapt_color_temp and supports_ct:
                 service_data["color_temp"] = mireds
             
+            # Skip if we have nothing to change
+            if len(service_data) <= 2:  # Only entity_id and transition
+                continue
+            
             self._last_applied[light_id] = {
-                "brightness": brightness_255,
-                "color_temp": mireds,
+                "brightness": brightness_255 if self._adapt_brightness else None,
+                "color_temp": mireds if self._adapt_color_temp else None,
             }
             
             try:

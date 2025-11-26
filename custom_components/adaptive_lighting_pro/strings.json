@@ -3,24 +3,25 @@
     "step": {
       "user": {
         "title": "Room Setup",
-        "description": "Configure lights and triggers for this room",
+        "description": "Configure lights and triggers for this room. Add trigger switches if you use Zigbee switches to control smart bulbs.",
         "data": {
           "name": "Room Name",
           "lights": "Lights to Control",
-          "trigger_entities": "Trigger Switches (Zigbee)",
+          "trigger_entities": "Trigger Switches (for Zigbee)",
           "enable_entity": "Enable Control (input_boolean)",
-          "sync_group": "Sync Group Name",
-          "apply_delay": "Apply Delay"
+          "sync_group": "Sync Group",
+          "apply_delay": "Apply Delay (ms)"
         },
         "data_description": {
-          "trigger_entities": "Watch these for ON events (Zigbee switches, light groups)",
-          "enable_entity": "Control this room via automations",
-          "sync_group": "Rooms with same name sync together",
-          "apply_delay": "Wait after turn-on (helps Zigbee timing)"
+          "trigger_entities": "Watch these entities for ON events. When they turn on, adaptive lighting applies to your lights. Use for Zigbee switches or light groups.",
+          "enable_entity": "Optional input_boolean to enable/disable this room via automations",
+          "sync_group": "Select an existing sync group or type a new name. Rooms in the same sync group will have identical brightness and color temperature.",
+          "apply_delay": "Wait time after a trigger or light turns on. Increase if Zigbee lights don't get the correct values."
         }
       },
       "brightness": {
         "title": "Brightness Settings",
+        "description": "Configure the brightness range and calculation mode",
         "data": {
           "min_brightness": "Minimum Brightness",
           "max_brightness": "Maximum Brightness",
@@ -28,39 +29,43 @@
         }
       },
       "color_temp": {
-        "title": "Color Temperature",
+        "title": "Color Temperature Settings",
+        "description": "Configure the color temperature range and calculation mode",
         "data": {
-          "min_color_temp": "Minimum (Warm)",
-          "max_color_temp": "Maximum (Cool)",
+          "min_color_temp": "Minimum Color Temp (Warm)",
+          "max_color_temp": "Maximum Color Temp (Cool)",
           "color_temp_mode": "Color Temp Mode"
         }
       },
       "timing": {
-        "title": "Timing",
+        "title": "Timing Settings",
+        "description": "Adjust sun times and update frequency",
         "data": {
-          "sunrise_offset": "Sunrise Offset",
-          "sunset_offset": "Sunset Offset",
-          "transition": "Transition Time",
-          "update_interval": "Update Interval"
+          "sunrise_offset": "Sunrise Offset (minutes)",
+          "sunset_offset": "Sunset Offset (minutes)",
+          "transition": "Transition Time (seconds)",
+          "update_interval": "Update Interval (seconds)"
         }
       },
       "sleep": {
-        "title": "Sleep Mode",
+        "title": "Sleep Mode Settings",
+        "description": "Configure values used when sleep mode is active",
         "data": {
           "sleep_brightness": "Sleep Brightness",
-          "sleep_color_temp": "Sleep Color Temp"
+          "sleep_color_temp": "Sleep Color Temperature"
         }
       },
       "override": {
-        "title": "Override Detection",
+        "title": "Manual Override Detection",
+        "description": "Configure how the integration handles manual light changes",
         "data": {
           "detect_manual_override": "Detect Manual Changes",
-          "manual_override_timeout": "Override Timeout"
+          "manual_override_timeout": "Override Timeout (minutes)"
         }
       }
     },
     "error": {
-      "no_lights": "Select at least one light"
+      "no_lights": "Please select at least one light"
     }
   },
   "options": {
@@ -74,47 +79,77 @@
           "enable_entity": "Enable Control",
           "sync_group": "Sync Group",
           "apply_delay": "Apply Delay"
+        },
+        "data_description": {
+          "sync_group": "Select an existing sync group or type a new name to create one."
         }
       },
       "brightness": {
-        "title": "Brightness",
+        "title": "Brightness Settings",
         "data": {
-          "min_brightness": "Minimum",
-          "max_brightness": "Maximum",
-          "brightness_mode": "Mode"
+          "min_brightness": "Minimum Brightness",
+          "max_brightness": "Maximum Brightness",
+          "brightness_mode": "Brightness Mode"
         }
       },
       "color_temp": {
-        "title": "Color Temperature",
+        "title": "Color Temperature Settings",
         "data": {
-          "min_color_temp": "Minimum",
-          "max_color_temp": "Maximum",
-          "color_temp_mode": "Mode"
+          "min_color_temp": "Minimum Color Temp",
+          "max_color_temp": "Maximum Color Temp",
+          "color_temp_mode": "Color Temp Mode"
         }
       },
       "timing": {
-        "title": "Timing",
+        "title": "Timing Settings",
         "data": {
           "sunrise_offset": "Sunrise Offset",
           "sunset_offset": "Sunset Offset",
-          "transition": "Transition",
+          "transition": "Transition Time",
           "update_interval": "Update Interval"
         }
       },
       "sleep": {
-        "title": "Sleep Mode",
+        "title": "Sleep Mode Settings",
         "data": {
-          "sleep_brightness": "Brightness",
-          "sleep_color_temp": "Color Temp"
+          "sleep_brightness": "Sleep Brightness",
+          "sleep_color_temp": "Sleep Color Temp"
         }
       },
       "override": {
-        "title": "Override",
+        "title": "Override Detection",
         "data": {
-          "detect_manual_override": "Detect Changes",
-          "manual_override_timeout": "Timeout"
+          "detect_manual_override": "Detect Manual Changes",
+          "manual_override_timeout": "Override Timeout"
         }
       }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "brightness": { "name": "Brightness" },
+      "color_temp": { "name": "Color Temperature" },
+      "color_temp_mireds": { "name": "Color Temperature Mireds" },
+      "circadian_factor": { "name": "Circadian Factor" },
+      "day_progress": { "name": "Day Progress" },
+      "sun_elevation": { "name": "Sun Elevation" },
+      "solar_position": { "name": "Solar Position" },
+      "status": { "name": "Status" },
+      "sync_group": { "name": "Sync Group" }
+    },
+    "switch": {
+      "enabled": { "name": "Enabled" },
+      "sleep_mode": { "name": "Sleep Mode" },
+      "manual_override": { "name": "Manual Override" },
+      "adapt_brightness": { "name": "Adapt Brightness" },
+      "adapt_color_temp": { "name": "Adapt Color Temp" }
+    },
+    "number": {
+      "min_brightness": { "name": "Minimum Brightness" },
+      "max_brightness": { "name": "Maximum Brightness" },
+      "min_color_temp": { "name": "Minimum Color Temp" },
+      "max_color_temp": { "name": "Maximum Color Temp" },
+      "transition": { "name": "Transition Time" }
     }
   }
 }

@@ -43,6 +43,7 @@ from .const import (
     DEFAULT_SLEEP_BRIGHTNESS,
     DEFAULT_SLEEP_COLOR_TEMP,
     MODE_CIRCADIAN,
+    SYNC_GROUPS,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -74,6 +75,9 @@ class AdaptiveLightingProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 self._data.update(user_input)
                 return await self.async_step_brightness()
 
+        # Get existing sync groups for dropdown
+        sync_group_options = self._get_sync_group_options()
+
         return self.async_show_form(
             step_id="user",
             data_schema=vol.Schema({
@@ -87,7 +91,14 @@ class AdaptiveLightingProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 vol.Optional(CONF_ENABLE_ENTITY): selector.EntitySelector(
                     selector.EntitySelectorConfig(domain="input_boolean")
                 ),
-                vol.Optional(CONF_SYNC_GROUP, default=""): selector.TextSelector(),
+                vol.Optional(CONF_SYNC_GROUP, default=""): selector.SelectSelector(
+                    selector.SelectSelectorConfig(
+                        options=sync_group_options,
+                        mode=selector.SelectSelectorMode.DROPDOWN,
+                        custom_value=True,
+                        sort=True,
+                    )
+                ),
                 vol.Optional(CONF_APPLY_DELAY, default=DEFAULT_APPLY_DELAY): selector.NumberSelector(
                     selector.NumberSelectorConfig(min=0, max=5000, step=100, unit_of_measurement="ms", mode=selector.NumberSelectorMode.SLIDER)
                 ),
@@ -95,6 +106,28 @@ class AdaptiveLightingProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             errors=errors,
             description_placeholders={"name": "Room Name"},
         )
+
+    def _get_sync_group_options(self) -> list[selector.SelectOptionDict]:
+        """Get existing sync groups as dropdown options."""
+        options = [
+            selector.SelectOptionDict(value="", label="None (No Sync)"),
+        ]
+        
+        # Get existing sync groups from hass.data
+        if self.hass.data.get(DOMAIN) and self.hass.data[DOMAIN].get(SYNC_GROUPS):
+            existing_groups = list(self.hass.data[DOMAIN][SYNC_GROUPS].keys())
+            for group in sorted(existing_groups):
+                # Count rooms in this group
+                group_data = self.hass.data[DOMAIN][SYNC_GROUPS][group]
+                room_count = len(group_data.get("controllers", []))
+                options.append(
+                    selector.SelectOptionDict(
+                        value=group, 
+                        label=f"{group} ({room_count} room{'s' if room_count != 1 else ''})"
+                    )
+                )
+        
+        return options
 
     async def async_step_brightness(self, user_input: dict[str, Any] | None = None) -> FlowResult:
         """Step 2: Brightness settings."""
@@ -221,6 +254,9 @@ class AdaptiveLightingProOptionsFlow(config_entries.OptionsFlow):
             self._data.update(user_input)
             return await self.async_step_brightness()
 
+        # Get existing sync groups for dropdown
+        sync_group_options = self._get_sync_group_options()
+
         return self.async_show_form(
             step_id="user",
             data_schema=vol.Schema({
@@ -234,12 +270,40 @@ class AdaptiveLightingProOptionsFlow(config_entries.OptionsFlow):
                 vol.Optional(CONF_ENABLE_ENTITY, default=self._data.get(CONF_ENABLE_ENTITY, "")): selector.EntitySelector(
                     selector.EntitySelectorConfig(domain="input_boolean")
                 ),
-                vol.Optional(CONF_SYNC_GROUP, default=self._data.get(CONF_SYNC_GROUP, "")): selector.TextSelector(),
+                vol.Optional(CONF_SYNC_GROUP, default=self._data.get(CONF_SYNC_GROUP, "")): selector.SelectSelector(
+                    selector.SelectSelectorConfig(
+                        options=sync_group_options,
+                        mode=selector.SelectSelectorMode.DROPDOWN,
+                        custom_value=True,
+                        sort=True,
+                    )
+                ),
                 vol.Optional(CONF_APPLY_DELAY, default=self._data.get(CONF_APPLY_DELAY, DEFAULT_APPLY_DELAY)): selector.NumberSelector(
                     selector.NumberSelectorConfig(min=0, max=5000, step=100, unit_of_measurement="ms", mode=selector.NumberSelectorMode.SLIDER)
                 ),
             }),
         )
+
+    def _get_sync_group_options(self) -> list[selector.SelectOptionDict]:
+        """Get existing sync groups as dropdown options."""
+        options = [
+            selector.SelectOptionDict(value="", label="None (No Sync)"),
+        ]
+        
+        # Get existing sync groups from hass.data
+        if self.hass.data.get(DOMAIN) and self.hass.data[DOMAIN].get(SYNC_GROUPS):
+            existing_groups = list(self.hass.data[DOMAIN][SYNC_GROUPS].keys())
+            for group in sorted(existing_groups):
+                group_data = self.hass.data[DOMAIN][SYNC_GROUPS][group]
+                room_count = len(group_data.get("controllers", []))
+                options.append(
+                    selector.SelectOptionDict(
+                        value=group, 
+                        label=f"{group} ({room_count} room{'s' if room_count != 1 else ''})"
+                    )
+                )
+        
+        return options
 
     async def async_step_brightness(self, user_input: dict[str, Any] | None = None) -> FlowResult:
         """Options step 2."""

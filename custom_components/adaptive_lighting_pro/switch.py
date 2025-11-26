@@ -29,6 +29,8 @@ async def async_setup_entry(
         EnabledSwitch(controller, entry),
         SleepModeSwitch(controller, entry),
         ManualOverrideSwitch(controller, entry),
+        AdaptBrightnessSwitch(controller, entry),
+        AdaptColorTempSwitch(controller, entry),
     ], True)
 
 
@@ -118,3 +120,49 @@ class ManualOverrideSwitch(BaseSwitch):
     async def async_turn_off(self, **kwargs: Any) -> None:
         await self._controller.async_clear_manual_override()
         _LOGGER.info("Manual override cleared: %s", self._controller.name)
+
+
+class AdaptBrightnessSwitch(BaseSwitch):
+    """Switch to enable/disable brightness adaptation."""
+
+    _attr_icon = "mdi:brightness-6"
+
+    def __init__(self, controller: AdaptiveLightingController, entry: ConfigEntry) -> None:
+        super().__init__(controller, entry)
+        self._attr_unique_id = f"{entry.entry_id}_adapt_brightness"
+        self._attr_name = "Adapt Brightness"
+
+    @property
+    def is_on(self) -> bool:
+        return self._controller.adapt_brightness
+
+    async def async_turn_on(self, **kwargs: Any) -> None:
+        self._controller.adapt_brightness = True
+        _LOGGER.info("Brightness adaptation enabled: %s", self._controller.name)
+
+    async def async_turn_off(self, **kwargs: Any) -> None:
+        self._controller.adapt_brightness = False
+        _LOGGER.info("Brightness adaptation disabled: %s", self._controller.name)
+
+
+class AdaptColorTempSwitch(BaseSwitch):
+    """Switch to enable/disable color temperature adaptation."""
+
+    _attr_icon = "mdi:thermometer-lines"
+
+    def __init__(self, controller: AdaptiveLightingController, entry: ConfigEntry) -> None:
+        super().__init__(controller, entry)
+        self._attr_unique_id = f"{entry.entry_id}_adapt_color_temp"
+        self._attr_name = "Adapt Color Temp"
+
+    @property
+    def is_on(self) -> bool:
+        return self._controller.adapt_color_temp
+
+    async def async_turn_on(self, **kwargs: Any) -> None:
+        self._controller.adapt_color_temp = True
+        _LOGGER.info("Color temp adaptation enabled: %s", self._controller.name)
+
+    async def async_turn_off(self, **kwargs: Any) -> None:
+        self._controller.adapt_color_temp = False
+        _LOGGER.info("Color temp adaptation disabled: %s", self._controller.name)

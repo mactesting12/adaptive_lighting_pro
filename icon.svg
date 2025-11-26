@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="curveGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1E3A5F"/>
+      <stop offset="15%" stop-color="#F97316"/>
+      <stop offset="35%" stop-color="#FBBF24"/>
+      <stop offset="50%" stop-color="#FEF9C3"/>
+      <stop offset="65%" stop-color="#FBBF24"/>
+      <stop offset="85%" stop-color="#F97316"/>
+      <stop offset="100%" stop-color="#1E3A5F"/>
+    </linearGradient>
+    
+    <clipPath id="bulbShape">
+      <path d="M 256 56
+               C 148 56 68 144 68 256
+               C 68 334 116 396 176 440
+               L 176 464
+               L 336 464
+               L 336 440
+               C 396 396 444 334 444 256
+               C 444 144 364 56 256 56 Z"/>
+    </clipPath>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="512" height="512" rx="96" fill="#0F172A"/>
+  
+  <!-- Bulb glass -->
+  <path d="M 256 56
+           C 148 56 68 144 68 256
+           C 68 334 116 396 176 440
+           L 176 464
+           L 336 464
+           L 336 440
+           C 396 396 444 334 444 256
+           C 444 144 364 56 256 56 Z" 
+        fill="#1E293B"
+        stroke="#3B82F6"
+        stroke-width="4"
+        opacity="0.9"/>
+  
+  <g clip-path="url(#bulbShape)">
+    <!-- Gaussian/bell curve representing circadian rhythm -->
+    <path d="M 68 420
+             L 68 400
+             Q 100 400 130 380
+             Q 160 350 190 280
+             Q 220 180 256 140
+             Q 292 180 322 280
+             Q 352 350 382 380
+             Q 412 400 444 400
+             L 444 420
+             L 444 520 L 68 520 Z"
+          fill="url(#curveGrad)"/>
+    
+    <!-- Curve outline -->
+    <path d="M 68 400
+             Q 100 400 130 380
+             Q 160 350 190 280
+             Q 220 180 256 140
+             Q 292 180 322 280
+             Q 352 350 382 380
+             Q 412 400 444 400"
+          fill="none"
+          stroke="white"
+          stroke-width="6"
+          stroke-linecap="round"/>
+    
+    <!-- Peak sun -->
+    <circle cx="256" cy="140" r="28" fill="#FBBF24"/>
+    <circle cx="256" cy="140" r="18" fill="#FEF3C7"/>
+  </g>
+  
+  <!-- Horizon line -->
+  <line x1="68" y1="400" x2="444" y2="400" stroke="#475569" stroke-width="2" stroke-dasharray="8,8" opacity="0.5"/>
+  
+  <!-- Sunrise icon -->
+  <g transform="translate(90, 400)">
+    <circle r="14" fill="#F97316" opacity="0.9"/>
+    <path d="M 0 -14 L 0 -24 M -14 0 L -24 0 M 14 0 L 24 0 M -10 -10 L -17 -17 M 10 -10 L 17 -17" 
+          stroke="#F97316" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+  </g>
+  
+  <!-- Sunset icon -->
+  <g transform="translate(422, 400)">
+    <circle r="14" fill="#F97316" opacity="0.9"/>
+    <path d="M 0 -14 L 0 -24 M -14 0 L -24 0 M 14 0 L 24 0 M -10 -10 L -17 -17 M 10 -10 L 17 -17" 
+          stroke="#F97316" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+  </g>
+  
+  <!-- Bulb base -->
+  <rect x="176" y="464" width="160" height="18" rx="4" fill="#64748B"/>
+  <rect x="188" y="482" width="136" height="14" rx="4" fill="#475569"/>
+  <rect x="204" y="496" width="104" height="18" rx="9" fill="#334155"/>
+  
+  <!-- Glass reflection -->
+  <path d="M 156 160 Q 132 240 156 340" 
+        stroke="white" 
+        stroke-width="12" 
+        stroke-linecap="round"
+        fill="none"
+        opacity="0.12"/>
+</svg>
