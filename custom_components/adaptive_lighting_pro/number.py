@@ -30,6 +30,8 @@ async def async_setup_entry(
         MinColorTempNumber(controller, entry),
         MaxColorTempNumber(controller, entry),
         TransitionNumber(controller, entry),
+        SleepBrightnessNumber(controller, entry),
+        SleepColorTempNumber(controller, entry),
     ], True)
 
 
@@ -161,3 +163,53 @@ class TransitionNumber(BaseNumber):
 
     async def async_set_native_value(self, value: float) -> None:
         self._controller.transition = int(value)
+
+
+class SleepBrightnessNumber(BaseNumber):
+    """Sleep mode brightness setting."""
+
+    _attr_native_min_value = 1
+    _attr_native_max_value = 50
+    _attr_native_step = 1
+    _attr_native_unit_of_measurement = PERCENTAGE
+    _attr_icon = "mdi:brightness-4"
+
+    def __init__(self, controller: AdaptiveLightingController, entry: ConfigEntry) -> None:
+        super().__init__(controller, entry)
+        self._attr_unique_id = f"{entry.entry_id}_sleep_brightness"
+        self._attr_name = "Sleep Brightness"
+
+    @property
+    def native_value(self) -> float:
+        return self._controller.sleep_brightness
+
+    async def async_set_native_value(self, value: float) -> None:
+        self._controller.sleep_brightness = int(value)
+        # If currently in sleep mode, apply immediately
+        if self._controller.sleep_mode:
+            await self._controller.async_force_update()
+
+
+class SleepColorTempNumber(BaseNumber):
+    """Sleep mode color temperature setting."""
+
+    _attr_native_min_value = 1800
+    _attr_native_max_value = 4000
+    _attr_native_step = 100
+    _attr_native_unit_of_measurement = "K"
+    _attr_icon = "mdi:moon-waning-crescent"
+
+    def __init__(self, controller: AdaptiveLightingController, entry: ConfigEntry) -> None:
+        super().__init__(controller, entry)
+        self._attr_unique_id = f"{entry.entry_id}_sleep_color_temp"
+        self._attr_name = "Sleep Color Temp"
+
+    @property
+    def native_value(self) -> float:
+        return self._controller.sleep_color_temp
+
+    async def async_set_native_value(self, value: float) -> None:
+        self._controller.sleep_color_temp = int(value)
+        # If currently in sleep mode, apply immediately
+        if self._controller.sleep_mode:
+            await self._controller.async_force_update()

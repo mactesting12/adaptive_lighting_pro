@@ -330,6 +330,22 @@ class AdaptiveLightingController:
     @transition.setter
     def transition(self, value: int) -> None:
         self._transition = value
+    
+    @property
+    def sleep_brightness(self) -> int:
+        return self._sleep_brightness
+    
+    @sleep_brightness.setter
+    def sleep_brightness(self, value: int) -> None:
+        self._sleep_brightness = value
+    
+    @property
+    def sleep_color_temp(self) -> int:
+        return self._sleep_color_temp
+    
+    @sleep_color_temp.setter
+    def sleep_color_temp(self, value: int) -> None:
+        self._sleep_color_temp = value
 
     async def async_start(self) -> None:
         """Start the controller."""
