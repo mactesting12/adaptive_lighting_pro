@@ -502,9 +502,16 @@ class AdaptiveLightingController:
         
         now = dt_util.utcnow()
         
+        # Adjust sunrise to today if it's in the future
         if sunrise and sunrise > now:
             sunrise = sunrise - timedelta(days=1)
-        if sunset and sunrise and sunset < sunrise:
+        
+        # Adjust sunset - if next_setting is tomorrow but sun is already down,
+        # we need today's sunset (which has passed)
+        if sunset and sunset > now and elevation <= 0:
+            # Sun is down, so today's sunset has passed - use yesterday's reference
+            sunset = sunset - timedelta(days=1)
+        elif sunset and sunrise and sunset < sunrise:
             sunset = sunset + timedelta(days=1)
         
         if sunrise:
@@ -518,11 +525,22 @@ class AdaptiveLightingController:
         """Calculate lighting factors."""
         now = dt_util.utcnow()
         
-        # Day progress
+        # If sun is down, we're in nighttime - use minimum values
+        if elevation <= 0:
+            # Determine if we're before sunrise (early morning) or after sunset (evening)
+            if sunrise and now < sunrise:
+                day_progress = 0.0  # Pre-dawn
+            else:
+                day_progress = 1.0  # Post-dusk
+            
+            # All factors should be 0 when sun is down
+            return 0.0, 0.0, 0.0, day_progress
+        
+        # Sun is up - calculate day progress
         if sunrise and sunset and sunrise < now < sunset:
             total = (sunset - sunrise).total_seconds()
             elapsed = (now - sunrise).total_seconds()
-            day_progress = elapsed / total
+            day_progress = max(0.0, min(1.0, elapsed / total))
         elif sunrise and now < sunrise:
             day_progress = 0.0
         else:
@@ -535,9 +553,7 @@ class AdaptiveLightingController:
             circadian = (2 * (1 - day_progress)) ** 1.5
         
         # Solar (elevation based)
-        if elevation <= 0:
-            solar = 0.0
-        elif elevation >= 60:
+        if elevation >= 60:
             solar = 1.0
         else:
             solar = elevation / 60.0
