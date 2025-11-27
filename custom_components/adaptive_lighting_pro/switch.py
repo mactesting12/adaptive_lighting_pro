@@ -70,6 +70,7 @@ class EnabledSwitch(BaseSwitch):
     async def async_turn_on(self, **kwargs: Any) -> None:
         self._controller.enabled = True
         _LOGGER.info("Adaptive Lighting enabled: %s", self._controller.name)
+        await self._controller.async_force_update()
 
     async def async_turn_off(self, **kwargs: Any) -> None:
         self._controller.enabled = False
@@ -93,10 +94,12 @@ class SleepModeSwitch(BaseSwitch):
     async def async_turn_on(self, **kwargs: Any) -> None:
         self._controller.sleep_mode = True
         _LOGGER.info("Sleep mode enabled: %s", self._controller.name)
+        await self._controller.async_force_update()
 
     async def async_turn_off(self, **kwargs: Any) -> None:
         self._controller.sleep_mode = False
         _LOGGER.info("Sleep mode disabled: %s", self._controller.name)
+        await self._controller.async_force_update()
 
 
 class ManualOverrideSwitch(BaseSwitch):
@@ -120,6 +123,7 @@ class ManualOverrideSwitch(BaseSwitch):
     async def async_turn_off(self, **kwargs: Any) -> None:
         await self._controller.async_clear_manual_override()
         _LOGGER.info("Manual override cleared: %s", self._controller.name)
+        # async_clear_manual_override already calls update
 
 
 class AdaptBrightnessSwitch(BaseSwitch):
@@ -139,6 +143,7 @@ class AdaptBrightnessSwitch(BaseSwitch):
     async def async_turn_on(self, **kwargs: Any) -> None:
         self._controller.adapt_brightness = True
         _LOGGER.info("Brightness adaptation enabled: %s", self._controller.name)
+        await self._controller.async_force_update()
 
     async def async_turn_off(self, **kwargs: Any) -> None:
         self._controller.adapt_brightness = False
@@ -162,6 +167,7 @@ class AdaptColorTempSwitch(BaseSwitch):
     async def async_turn_on(self, **kwargs: Any) -> None:
         self._controller.adapt_color_temp = True
         _LOGGER.info("Color temp adaptation enabled: %s", self._controller.name)
+        await self._controller.async_force_update()
 
     async def async_turn_off(self, **kwargs: Any) -> None:
         self._controller.adapt_color_temp = False

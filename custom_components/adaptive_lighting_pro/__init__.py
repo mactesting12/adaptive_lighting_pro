@@ -485,7 +485,28 @@ class AdaptiveLightingController:
         self._manual_override = False
         self._manual_override_until = None
         _LOGGER.debug("Manual override cleared for %s", self._name)
-        await self._async_update()
+        await self.async_force_update()
+
+    async def async_force_update(self) -> None:
+        """Force recalculation and apply to lights immediately."""
+        # Recalculate values
+        brightness, color_temp = self._calculate_values()
+        self._current_brightness = brightness
+        self._current_color_temp = color_temp
+        
+        # Update sync group if applicable
+        if self._sync_group:
+            sync_groups = self.hass.data[DOMAIN].get(SYNC_GROUPS, {})
+            sync_data = sync_groups.get(self._sync_group)
+            if sync_data:
+                sync_data["brightness"] = brightness
+                sync_data["color_temp"] = color_temp
+        
+        # Apply to lights
+        await self.async_apply_lighting()
+        
+        _LOGGER.debug("Force update completed for %s: brightness=%d, color_temp=%d", 
+                      self._name, brightness, color_temp)
 
     def _get_sun_data(self) -> tuple[datetime | None, datetime | None, float]:
         """Get sunrise, sunset, and elevation."""
