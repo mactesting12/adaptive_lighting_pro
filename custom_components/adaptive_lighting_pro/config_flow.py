@@ -19,6 +19,7 @@ from .const import (
     CONF_ENABLE_ENTITY,
     CONF_SYNC_GROUP,
     CONF_APPLY_DELAY,
+    CONF_INSTANT_TRANSITION,
     CONF_MIN_BRIGHTNESS,
     CONF_MAX_BRIGHTNESS,
     CONF_MIN_COLOR_TEMP,
@@ -102,6 +103,7 @@ class AdaptiveLightingProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 vol.Optional(CONF_APPLY_DELAY, default=DEFAULT_APPLY_DELAY): selector.NumberSelector(
                     selector.NumberSelectorConfig(min=0, max=5000, step=100, unit_of_measurement="ms", mode=selector.NumberSelectorMode.SLIDER)
                 ),
+                vol.Optional(CONF_INSTANT_TRANSITION, default=True): selector.BooleanSelector(),
             }),
             errors=errors,
             description_placeholders={"name": "Room Name"},
@@ -284,6 +286,7 @@ class AdaptiveLightingProOptionsFlow(config_entries.OptionsFlow):
                 vol.Optional(CONF_APPLY_DELAY, default=self._data.get(CONF_APPLY_DELAY, DEFAULT_APPLY_DELAY)): selector.NumberSelector(
                     selector.NumberSelectorConfig(min=0, max=5000, step=100, unit_of_measurement="ms", mode=selector.NumberSelectorMode.SLIDER)
                 ),
+                vol.Optional(CONF_INSTANT_TRANSITION, default=self._data.get(CONF_INSTANT_TRANSITION, True)): selector.BooleanSelector(),
             }),
         )
 

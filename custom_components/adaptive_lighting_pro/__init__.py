@@ -28,6 +28,7 @@ from .const import (
     CONF_ENABLE_ENTITY,
     CONF_SYNC_GROUP,
     CONF_APPLY_DELAY,
+    CONF_INSTANT_TRANSITION,
     CONF_MIN_BRIGHTNESS,
     CONF_MAX_BRIGHTNESS,
     CONF_MIN_COLOR_TEMP,
@@ -159,6 +160,7 @@ class AdaptiveLightingController:
         self._enable_entity = data.get(CONF_ENABLE_ENTITY, "")
         self._sync_group = data.get(CONF_SYNC_GROUP, "")
         self._apply_delay = data.get(CONF_APPLY_DELAY, DEFAULT_APPLY_DELAY)
+        self._instant_transition = data.get(CONF_INSTANT_TRANSITION, True)
         self._min_brightness = data.get(CONF_MIN_BRIGHTNESS, DEFAULT_MIN_BRIGHTNESS)
         self._max_brightness = data.get(CONF_MAX_BRIGHTNESS, DEFAULT_MAX_BRIGHTNESS)
         self._min_color_temp = data.get(CONF_MIN_COLOR_TEMP, DEFAULT_MIN_COLOR_TEMP)
@@ -369,15 +371,17 @@ class AdaptiveLightingController:
                 if new_state.state in ["on", "home", "playing", "open"]:
                     if old_state is None or old_state.state not in ["on", "home", "playing", "open"]:
                         _LOGGER.debug(
-                            "Trigger %s turned on for %s, applying with %dms delay",
+                            "Trigger %s turned on for %s, applying %swith %dms delay",
                             event.data.get("entity_id"),
                             self._name,
+                            "instantly " if self._instant_transition else "",
                             self._apply_delay,
                         )
                         
                         async def delayed_apply():
                             await asyncio.sleep(self._apply_delay / 1000)
-                            await self.async_apply_lighting()
+                            # Use instant transition if enabled to prevent visible color shift
+                            await self.async_apply_lighting(instant=self._instant_transition)
                         
                         self.hass.async_create_task(delayed_apply())
             
@@ -402,14 +406,16 @@ class AdaptiveLightingController:
                 # Light turned ON
                 if new_state.state == STATE_ON and (old_state is None or old_state.state != STATE_ON):
                     _LOGGER.debug(
-                        "Light %s turned on, applying with %dms delay",
+                        "Light %s turned on, applying %swith %dms delay",
                         entity_id,
+                        "instantly " if self._instant_transition else "",
                         self._apply_delay,
                     )
                     
                     async def delayed_apply():
                         await asyncio.sleep(self._apply_delay / 1000)
-                        await self.async_apply_lighting([entity_id])
+                        # Use instant transition if enabled to prevent visible color shift
+                        await self.async_apply_lighting([entity_id], instant=self._instant_transition)
                     
                     self.hass.async_create_task(delayed_apply())
                     return
@@ -631,8 +637,13 @@ class AdaptiveLightingController:
         
         await self.async_apply_lighting()
 
-    async def async_apply_lighting(self, entity_ids: list[str] | None = None) -> None:
-        """Apply lighting to lights."""
+    async def async_apply_lighting(self, entity_ids: list[str] | None = None, instant: bool = False) -> None:
+        """Apply lighting to lights.
+        
+        Args:
+            entity_ids: Specific lights to update, or None for all
+            instant: If True, use transition=0 for immediate change
+        """
         if not self.enabled:
             return
         
@@ -655,9 +666,12 @@ class AdaptiveLightingController:
             supported_modes = state.attributes.get("supported_color_modes", [])
             supports_ct = "color_temp" in supported_modes
             
+            # Use instant transition (0) when light just turned on, normal otherwise
+            transition = 0 if instant else self._transition
+            
             service_data = {
                 "entity_id": light_id,
-                "transition": self._transition,
+                "transition": transition,
             }
             
             # Only add brightness if adapt_brightness is enabled

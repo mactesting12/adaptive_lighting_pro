@@ -10,13 +10,15 @@
           "trigger_entities": "Trigger Switches (for Zigbee)",
           "enable_entity": "Enable Control (input_boolean)",
           "sync_group": "Sync Group",
-          "apply_delay": "Apply Delay (ms)"
+          "apply_delay": "Apply Delay (ms)",
+          "instant_transition": "Instant Transition on Turn-On"
         },
         "data_description": {
           "trigger_entities": "Watch these entities for ON events. When they turn on, adaptive lighting applies to your lights. Use for Zigbee switches or light groups.",
           "enable_entity": "Optional input_boolean to enable/disable this room via automations",
           "sync_group": "Select an existing sync group or type a new name. Rooms in the same sync group will have identical brightness and color temperature.",
-          "apply_delay": "Wait time after a trigger or light turns on. Increase if Zigbee lights don't get the correct values."
+          "apply_delay": "Wait time after a trigger or light turns on. Increase if Zigbee lights don't get the correct values.",
+          "instant_transition": "Apply color/brightness immediately when lights turn on (no gradual transition). Prevents visible color shift on Hue and similar bulbs."
         }
       },
       "brightness": {
@@ -78,10 +80,12 @@
           "trigger_entities": "Trigger Switches",
           "enable_entity": "Enable Control",
           "sync_group": "Sync Group",
-          "apply_delay": "Apply Delay"
+          "apply_delay": "Apply Delay",
+          "instant_transition": "Instant Transition on Turn-On"
         },
         "data_description": {
-          "sync_group": "Select an existing sync group or type a new name to create one."
+          "sync_group": "Select an existing sync group or type a new name to create one.",
+          "instant_transition": "Apply color/brightness immediately when lights turn on."
         }
       },
       "brightness": {
